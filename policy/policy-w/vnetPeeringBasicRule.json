@@ -1,0 +1,89 @@
+{
+    "mode": "Indexed",
+    "policyRule": {
+      "if": {
+        "field": "type",
+        "equals": "Microsoft.Network/virtualNetworks"
+      },
+      "then": {
+        "effect": "deployIfNotExists",
+        "details": {
+          "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+          "resourceGroupName": "connectivityRG",
+          "roleDefinitionIds": [
+            "/providers/Microsoft.Authorization/roleDefinitions/4d97b98b-1d4f-4787-a291-c67834d212e7"
+          ],
+          "deployment": {
+            "properties": {
+              "mode": "incremental",
+              "template": {
+                "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+                "contentVersion": "1.0.0.0",
+                "parameters": {
+                  "spokeId": {
+                    "type": "string"
+                  },
+                  "spokeName": {
+                    "type": "string"
+                  },
+                  "hubId": {
+                    "type": "string"
+                  },
+                  "hubName": {
+                    "type": "string"
+                  }
+                },
+                "resources": [
+                  {
+                    "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+                    "apiVersion": "2020-11-01",
+                    "name": "[concat(parameters('hubName'),'/', concat(parameters('hubName'),'-', parameters('spokeName')))]",
+                    "properties": {
+                      "peeringState": "Connected",
+                      "remoteVirtualNetwork": {
+                        "id": "[parameters('spokeId')]"
+                      },
+                      "allowVirtualNetworkAccess": true,
+                      "allowForwardedTraffic": true,
+                      "allowGatewayTransit": false,
+                      "useRemoteGateways": false
+                    }
+                  },
+                  {
+                    "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+                    "apiVersion": "2020-11-01",
+                    "name": "[concat(parameters('spokeName'),'/', concat(parameters('spokeName'),'-hub'))]",
+                    "properties": {
+                      "peeringState": "Connected",
+                      "remoteVirtualNetwork": {
+                        "id": "[parameters('hubId')]"
+                      },
+                      "allowVirtualNetworkAccess": true,
+                      "allowForwardedTraffic": true,
+                      "allowGatewayTransit": false,
+                      "useRemoteGateways": false
+                    }
+                  }
+                ]
+              },
+              "parameters": {
+                "spokeId": {
+                  "value": "[field('id')]"
+                },
+                "spokeName": {
+                  "value": "[field('name')]"
+                },
+                "hubName": {
+                  "value": "hubvnet"
+                },
+                "hubId": {
+                  "value": "/subscriptions/ab55f33f-2592-41e6-8d1c-575802f2ac32/resourceGroups/connectivityRG/providers/Microsoft.Network/virtualNetworks/hubvnet"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "parameters": {}
+  }
