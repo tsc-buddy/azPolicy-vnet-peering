@@ -87,7 +87,7 @@
                                 "value": "hubvnet"
                             },
                             "hubId": {
-                                "value": "/subscriptions/ab55f33f-2592-41e6-8d1c-575802f2ac32/resourceGroups/connectivityRG/providers/Microsoft.Network/virtualNetworks/hubvnet"
+                                "value": ""
                             }
                         }
                     }
